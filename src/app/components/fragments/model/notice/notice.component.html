@@ -1,0 +1,193 @@
+<div #rootComponentElm>
+
+  <div *ngIf="!!notice.deleted_at" class="p-3 border border-gray-300">
+    <p>
+      <a class="link-text" [routerLink]="['/', 'notices', notice.id]">
+        This notice has been deleted.
+      </a>
+    </p>
+    
+  </div>
+
+  <div *ngIf="!notice.deleted_at">
+    <!-- if is normal notice -->
+    <ng-container *ngIf="!notice.parent_notice_id && !notice.quoting_notice_id && !notice.share_notice_id">
+      <div class="flex flex-row gap-3">
+        <div class="w-16">
+          <img class="rounded-xl w-full" [src]="notice.owner?.icon_link || './assets/img/anon.png'" alt="">
+        </div>
+
+        <div class="grow">
+          <p class="mb-3">
+            <span><a class="link-text" [routerLink]="['/', 'users', notice.owner?.id, 'home']">{{ notice.owner?.displayname }}</a></span>
+            <span class="mx-2 inline-block">&middot;</span> 
+            <a class="link-text" [routerLink]="['/', 'notices', notice.id]"><span class="text-sm">{{ notice.created_at | date : 'MMM d, y - h:mm a' }} ({{ notice.created_at | timeAgo }})</span></a>
+          </p>
+          <p>{{ notice.body }}</p>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- if is a reply -->
+    <ng-container *ngIf="!!notice.parent_notice_id">
+      <p *ngIf="show_parent_notice" class="mb-5"><a class="link-text"  [routerLink]="['/', 'users', notice.parent_notice!.owner?.id, 'home']">{{ notice.parent_notice!.owner?.displayname }}</a> replied to this notice</p>
+      <div *ngIf="show_parent_notice" class="border border-gray-300 mt-3 p-3 flex flex-row gap-3 mb-3">
+        <div class="w-8">
+          <img class="rounded-xl w-full" [src]="notice.parent_notice!.owner?.icon_link || './assets/img/anon.png'" alt="">
+        </div>
+
+        <div class="grow">
+          <p class="mb-3">
+            <span><a class="link-text" [routerLink]="['/', 'users', notice.parent_notice!.owner?.id, 'home']">{{ notice.parent_notice!.owner?.displayname }}</a></span>
+            <span class="mx-2 inline-block">&middot;</span> 
+            <a class="link-text" [routerLink]="['/', 'notices', notice.parent_notice_id]"><span class="text-sm">{{ notice.parent_notice!.created_at | date : 'MMM d, y - h:mm a' }} ({{ notice.parent_notice!.created_at | timeAgo }})</span></a>
+          </p>
+          <p>{{ notice.parent_notice!.body }}</p>
+        </div>
+      </div>
+
+      <div class="flex flex-row gap-3">
+        <div class="w-16">
+          <img class="rounded-xl w-full" [src]="notice.owner?.icon_link || './assets/img/anon.png'" alt="">
+        </div>
+
+        <div class="grow">
+          <p class="mb-3">
+            <span><a class="link-text" [routerLink]="['/', 'users', notice.owner?.id, 'home']">{{ notice.owner?.displayname }}</a></span>
+            <span class="mx-2 inline-block">&middot;</span> 
+            <a class="link-text" [routerLink]="['/', 'notices', notice.id]"><span class="text-sm">{{ notice.created_at | date : 'MMM d, y - h:mm a' }} ({{ notice.created_at | timeAgo }})</span></a>
+          </p>
+          <p>{{ notice.body }}</p>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- if is quote -->
+    <ng-container *ngIf="!!notice.quoting_notice_id">
+      <p class="mb-5">
+        <span><a class="link-text" [routerLink]="['/', 'users', notice.owner?.id, 'home']">{{ notice.owner?.displayname }}</a></span> quoted this notice
+      </p>
+      <div class="flex flex-row gap-3">
+        <div class="w-16">
+          <img class="rounded-xl w-full" [src]="notice.owner?.icon_link || './assets/img/anon.png'" alt="">
+        </div>
+
+        <div class="grow">
+          <p class="mb-3">
+            <span><a class="link-text" [routerLink]="['/', 'users', notice.owner?.id, 'home']">{{ notice.owner?.displayname }}</a></span>
+            <span class="mx-2 inline-block">&middot;</span> 
+            <a class="link-text" [routerLink]="['/', 'notices', notice.id]"><span class="text-sm">{{ notice.created_at | date : 'MMM d, y - h:mm a' }} ({{ notice.created_at | timeAgo }})</span></a>
+          </p>
+          <p>{{ notice.body }}</p>
+
+          <!-- quoting notice -->
+          <div class="border border-gray-300 mt-3 p-3 flex flex-row gap-3">
+            <div class="w-8">
+              <img class="rounded-xl w-full" [src]="notice.owner?.icon_link || './assets/img/anon.png'" alt="">
+            </div>
+
+            <div class="grow">
+              <p class="mb-3">
+                <span><a class="link-text" [routerLink]="['/', 'users', notice.quote_notice!.owner?.id, 'home']">{{ notice.quote_notice!.owner?.displayname }}</a></span>
+                <span class="mx-2 inline-block">&middot;</span> 
+                <a class="link-text" [routerLink]="['/', 'notices', notice.quoting_notice_id]"><span class="text-sm">{{ notice.quote_notice!.created_at | date : 'MMM d, y - h:mm a' }} ({{ notice.quote_notice!.created_at | timeAgo }})</span></a>
+              </p>
+              <p>{{ notice.quote_notice!.body }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- if is share -->
+    <ng-container *ngIf="!!notice.share_notice_id">
+      <div class="flex flex-row gap-3 items-center mb-5">
+        <div class="w-8">
+          <img class="rounded-xl w-full" [src]="notice.owner?.icon_link || './assets/img/anon.png'" alt="">
+        </div>
+        <div class="grow">
+          <p class="">
+            <span><a class="link-text" [routerLink]="['/', 'users', notice.owner?.id, 'home']">{{ notice.owner?.displayname }}</a></span> shared this notice
+          </p>
+        </div>
+      </div>
+
+      <!-- quoting notice -->
+      <div class="border border-gray-300 mt-3 p-3 flex flex-row gap-3">
+        <div class="w-8">
+          <img class="rounded-xl w-full" [src]="notice.owner?.icon_link || './assets/img/anon.png'" alt="">
+        </div>
+
+        <div class="grow">
+          <p class="mb-3">
+            <span><a class="link-text" [routerLink]="['/', 'users', notice.share_notice!.owner?.id, 'home']">{{ notice.share_notice!.owner?.displayname }}</a></span>
+            <span class="mx-2 inline-block">&middot;</span> 
+            <a class="link-text" [routerLink]="['/', 'notices', notice.share_notice_id]"><span class="text-sm">{{ notice.share_notice!.created_at | date : 'MMM d, y - h:mm a' }} ({{ notice.share_notice!.created_at | timeAgo }})</span></a>
+          </p>
+          <p>{{ notice.share_notice!.body }}</p>
+        </div>
+      </div>
+    </ng-container>
+
+    
+    <div class="flex flex-row gap-3">
+      <div class="w-16"></div>
+
+      <div class="grow">
+        <!-- controls -->
+        <ng-container *ngIf="stats">
+          <div class="flex flex-row justify-between mt-7" *ngIf="!notice.share_notice_id">
+            <div class="flex flex-row gap-9">
+              <span class="cursor-pointer">
+                <i class="fa-solid fa-square-poll-vertical"></i> {{ stats.analytics_count | number }}
+              </span>
+        
+              <span class="cursor-pointer" [ngClass]="{ 'text-blue-300': !!activity && !!activity.replied }" (click)="set_action_context(ActionContext.REPLY)">
+                <i class="fa-solid fa-comments"></i> {{ stats.replies_count | number }}
+              </span>
+        
+              <span class="cursor-pointer" [ngClass]="{ 'text-green-500': !!activity && !!activity.quoted }" (click)="set_action_context(ActionContext.QUOTE)">
+                <i class="fa-solid fa-retweet"></i> {{ stats.quotes_count | number }}
+              </span>
+        
+              <span class="cursor-pointer" [ngClass]="{ 'text-blue-500': !!activity && !!activity.shared }" (click)="create_notice_share()">
+                <i class="fa-solid fa-share"></i> {{ stats.shares_count | number }}
+              </span>
+    
+              <span class="cursor-pointer" [ngClass]="{ 'text-red-500': !!activity && !!activity.reacted }" (click)="toggle_like()">
+                <i class="fa-solid fa-heart"></i> {{ stats.reactions_count | number }}
+              </span>
+            </div>
+      
+            <div class="relative">
+              <span title="Menu"><i class="fa-solid fa-ellipsis cursor-pointer" (click)="isMenuShown = !isMenuShown"></i></span>
+              <ul [ngClass]="{
+                'ghost': !isMenuShown,
+                'absolute border border-gray-300 z-10 bg-white w-36': isMenuShown
+              }">
+                <li *ngIf="isOwner" (click)="delete_notice()" class="p-1 flex items-center cursor-pointer hover:bg-gray-200">Delete</li>
+              </ul>
+            </div>
+          </div>
+          
+          <ng-container [ngSwitch]="current_action_context">
+            <div class="p-3" *ngSwitchCase="ActionContext.REPLY">
+              <p>Reply</p>
+              <app-notice-form
+                (formSubmit)="create_notice_reply($event)"
+              ></app-notice-form>
+            </div>
+    
+            <div class="p-3" *ngSwitchCase="ActionContext.QUOTE">
+              <p>Quote</p>
+              <app-notice-form
+                (formSubmit)="create_notice_quote($event)"
+              ></app-notice-form>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+</div>

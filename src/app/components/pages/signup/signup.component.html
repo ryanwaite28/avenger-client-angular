@@ -1,0 +1,55 @@
+<div class="container mx-auto">
+  <div class="background-white m-16">
+    <form class="p-16 border border-gray-300 shadow-sm" [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+      <fieldset class="uk-fieldset">
+        <legend class="text-5xl mb-10">Sign Up</legend>
+
+        <div class="uk-child-width-expand@s" uk-grid>
+          <div class="mb-7">
+            <span class="label-info">
+              Username ({{ signupForm.value.username.length }}/{{ TEXT_FORM_LIMIT }})
+            </span>
+            <input class="input-text-1" type="text" placeholder="Username" formControlName="username" >
+          </div>
+
+          <div class="mb-7">
+            <span class="label-info">
+              Display Name ({{ signupForm.value.displayname.length }}/{{ TEXT_FORM_LIMIT }})
+            </span>
+            <input class="input-text-1" type="text" placeholder="Display Name" formControlName="displayname" >
+          </div>
+        </div>
+
+        <div class="mb-7">
+          <span class="label-info">
+            Email ({{ signupForm.value.email.length }}/{{ TEXT_FORM_LIMIT }})
+          </span>
+          <input class="input-text-1" type="email" placeholder="Email" formControlName="email" >
+        </div>
+
+        <div class="mb-7">
+          <span class="label-info">
+            Password ({{ signupForm.value.password.length }}/{{ TEXT_FORM_LIMIT }})
+          </span>
+          <input class="input-text-1" type="password" placeholder="Password" formControlName="password" >
+        </div>
+
+        <div class="mb-7">
+          <span class="label-info">
+            Confirm Password ({{ signupForm.value.confirmPassword.length }}/{{ TEXT_FORM_LIMIT }})
+          </span>
+          <input class="input-text-1" type="password" placeholder="Confirm Password" formControlName="confirmPassword" >
+        </div>
+      </fieldset>
+
+      <button
+        type="submit"
+        [attr.data-shouldDisable]="shouldDisable"
+        [ngClass]="{ 'btn-primary-1': !shouldDisable, 'btn-disabled': shouldDisable }"
+        [disabled]="shouldDisable"
+      >
+        Submit
+      </button>
+    </form>
+  </div>
+</div>

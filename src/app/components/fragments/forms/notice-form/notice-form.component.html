@@ -1,0 +1,19 @@
+<form #noticeFormElm class="block p-3" [formGroup]="noticeForm" (ngSubmit)="onSubmit(noticeFormElm)">
+  <h1 class="text-xl">Notice</h1>
+  <div class="flex flex-row gap-3">
+    <div class="grow">
+      <span class="label-info text-sm text-gray-500 mb-2 block">
+        Body ({{ noticeForm.value.body?.length }}/{{ NOTICE_TEXT_FORM_LIMIT }})
+      </span>
+      <textarea class="input-text-1" type="text" placeholder="Enter a notice" formControlName="body"></textarea>
+      <button
+        type="submit"
+        [attr.data-shouldDisable]="loading"
+        [ngClass]="{ 'btn-primary-1': !loading, 'btn-disabled': loading }"
+        [disabled]="loading"
+      >
+        Submit
+      </button>
+    </div>
+  </div>
+</form>

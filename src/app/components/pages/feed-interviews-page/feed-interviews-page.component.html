@@ -1,0 +1,46 @@
+<div *ngIf="!!you" id="feed-interviews-page-component" class="w-full md:w-[1200px] mx-auto px-8 py-4 flex flex-row gap-5">
+  
+  <!-- Left -->
+  <div class="side-nav w-1/5">
+    <div>
+      
+    </div>
+  </div>
+
+  <!-- Middle -->
+  <div class="feed-contents grow">
+    <div class="flex flex-row gap-3 mb-9 border-x border-b border-t border-gray-300">
+      <div class="w-24 p-3">
+        <img class="rounded-xl w-full" [src]="you.icon_link || './assets/img/anon.png'" alt="">
+      </div>
+
+      <div class="grow">
+        <app-interview-form
+          (formSubmit)="create_interview($event)"
+        ></app-interview-form>
+      </div>
+    </div>
+
+    <div class="border-x border-gray-300">
+      <div *ngFor="let interview of interview_feed; let isFirst = first" [ngClass]="{ 'border-t': isFirst }" class="p-3 border-b border-gray-300">
+        <app-interview
+          [interview]="interview"
+        ></app-interview>
+      </div>
+
+      <div #feedBottomElm></div>
+    </div>
+
+    <div *ngIf="loading && !end_reached" class="p-4 flex justify-center">
+      <app-spinner></app-spinner>
+    </div>
+  </div>
+
+  <!-- Right -->
+  <div class="more-info hidden sm:block w-1/5">
+    <div>
+      
+    </div>
+  </div>
+  
+</div>

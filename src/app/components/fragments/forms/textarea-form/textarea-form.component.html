@@ -1,0 +1,13 @@
+<div class="">
+  <span *ngIf="!!label" class="label-info text-sm text-gray-500 mb-2 block">
+    {{ label }}
+  </span>
+  <textarea class="input-text-1" type="text" [placeholder]="placeholder" [(ngModel)]="textValue"></textarea>
+  <button
+    type="button"
+    (click)="onSubmit()"
+    [ngClass]="{ 'btn-primary-1': !loading, 'btn-disabled': loading }"
+  >
+    Submit
+  </button>
+</div>

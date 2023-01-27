@@ -1,0 +1,48 @@
+<form #interviewFormElm class="block p-3" [formGroup]="interviewForm" (ngSubmit)="onSubmit(interviewFormElm)">
+  <h1 class="text-xl">Interview</h1>
+  <div class="flex flex-row gap-3">
+    <div class="grow">
+      <div class="mb-7">
+        <span class="label-info text-sm text-gray-500 mb-2 block">
+          YouTube Link ({{ interviewForm.value.video_link?.length }}/{{ TEXT_FORM_LIMIT }})
+        </span>
+        <input class="input-text-2 border" type="text" placeholder="Enter link to YouTube Video" formControlName="video_link" [ngClass]="{ 'border-red-500': interviewForm.controls.video_link.touched && interviewForm.controls.video_link.invalid }" />
+
+      </div>
+      
+      <div class="mb-7">
+        <span class="label-info text-sm text-gray-500 mb-2 block">
+          Title ({{ interviewForm.value.title?.length }}/{{ TEXT_FORM_LIMIT }})
+        </span>
+        <input class="input-text-2 border" type="text" placeholder="Enter a title" formControlName="title" [ngClass]="{ 'border-red-500': interviewForm.controls.title.touched && interviewForm.controls.title.invalid }" />
+      </div>
+
+      <div class="mb-7">
+        <span class="label-info text-sm text-gray-500 mb-2 block">
+          Description ({{ interviewForm.value.description?.length }}/{{ TEXT_FORM_LIMIT }})
+        </span>
+        <textarea class="input-text-2 border" type="text" placeholder="Enter a description" formControlName="description" [ngClass]="{ 'border-red-500': interviewForm.controls.description.touched && interviewForm.controls.description.invalid }"></textarea>
+      </div>
+      
+      <div *ngIf="!!youtubeEmbedControl.value" class="mb-3">
+        <h1 class="mb-3">Preview</h1>
+        <iframe [src]="youtubeEmbedControl.value" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen frameborder="0" class="h-64 w-full"></iframe>
+      </div>
+
+      <div class="mb-7 flex flex-row gap-3 items-center" *ngIf="!!youtubeEmbedControl.value">
+        <input class="" type="checkbox" [(ngModel)]="hasPermissionToPost" [ngModelOptions]="{ standalone: true }" />
+        <span class="label-info text-sm text-gray-500">
+          Do you have permission to post this video?
+        </span>
+      </div>
+
+      <button
+        type="submit"
+        [ngClass]="{ 'btn-primary-1': hasPermissionToPost && interviewForm.valid && !loading, 'btn-disabled': !hasPermissionToPost || interviewForm.invalid || loading }"
+        [disabled]="loading"
+      >
+        Submit
+      </button>
+    </div>
+  </div>
+</form>

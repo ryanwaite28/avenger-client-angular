@@ -1,0 +1,51 @@
+<div>
+  <div class="">
+    <div class="w-4/5 mx-auto" *ngIf="user">
+      
+      <div class="flex flex-col gap-4">
+        <div class="w-full">
+          <!-- Profile Card -->
+          <div>
+            <div class="user-wallpaper relative" [bgImgCover]="user.wallpaper_link || './assets/img/default-wallpaper.jpg'">
+              <div class="dim absolute w-full h-full"></div>
+            </div>
+
+            <div class="user-info-container relative border-l border-b border-r">
+              <div class="">
+                <img class="user-icon" [src]="user.icon_link || './assets/img/anon.png'" alt="">
+              </div>
+
+              <div class="flex flex-col sm:flex-row gap-4">
+                <div class="w-full sm:w-1/2">
+                  <h1 class="text-gray-900 font-bold text-xl leading-8 my-1">{{ user.displayname }}</h1>
+                  <h3 class="text-gray-600 font-lg text-semibold leading-6">@{{ user.username }}</h3>
+                  <p class="text-sm text-gray-500 hover:text-gray-600 leading-6">{{ user.bio }}</p>
+                </div>
+
+                <div class="w-full sm:w-1/2" *ngIf="isNotYou">
+                  <button
+                    (click)="toggle_user_follow()"
+                    type="button"
+                    class="border transition p-2 rounded-lg hover:text-white"
+                    [ngClass]="{
+                      'text-blue-500 border-blue-500 hover:bg-blue-500': !isFollowing,
+                      'text-red-500 border-red-500 hover:bg-red-500': isFollowing
+                    }"
+                    [disabled]="loading"
+                  >
+                    {{ isFollowing ? 'Unfollow' : 'Follow' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End of profile card -->
+        </div>
+
+        <div class="w-full">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

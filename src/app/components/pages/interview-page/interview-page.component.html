@@ -1,0 +1,58 @@
+<div *ngIf="!!you" id="feed-page-component" class="w-full md:w-[1200px] mx-auto px-8 py-4 flex flex-row gap-5">
+  <div class="side-nav w-1/5">
+    <div>
+      
+    </div>
+  </div>
+
+  <div class="feed-contents grow border-gray-300">
+    <div class="border-x border-t border-gray-300 p-3">
+      <span class="cursor-pointer link-text" (click)="go_back()">
+        <div class="flex flex-row items-center">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span class="mx-2"></span>
+          <span>Back</span>
+        </div>
+      </span>
+    </div>
+    <div class="">
+      <div>
+        <ng-container [ngSwitch]="!!interview">
+          <div *ngSwitchCase="true">
+            <div class="p-3 mb-5 border border-gray-300">
+              <app-interview
+                [interview]="interview"
+              ></app-interview>
+            </div>
+
+            <div class="border-b border-gray-300">
+              <p class="text-xl mb-3">Comments</p>
+              <div *ngFor="let comment of interview.comments" class="p-3 border-x border-t border-gray-300">
+                <app-interview-comment
+                  [comment]="comment"
+                ></app-interview-comment>
+              </div>
+            </div>
+          </div>
+
+          <div *ngSwitchCase="false">
+            <p>No Interview Found</p>
+          </div>
+        </ng-container>
+
+      </div>
+
+      <div #feedBottomElm></div>
+    </div>
+
+    <div *ngIf="loading && !end_reached" class="p-4 flex justify-center">
+      <app-spinner></app-spinner>
+    </div>
+  </div>
+
+  <div class="more-info hidden sm:block w-1/5">
+    <div>
+      
+    </div>
+  </div>
+</div>

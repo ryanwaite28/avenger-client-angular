@@ -1,0 +1,151 @@
+import { ActivatedRouteSnapshot } from '@angular/router';
+import { USER_RECORDS } from '../enums/all.enums';
+import { INotification } from '../interfaces/notification.interface';
+import { IUser } from '../interfaces/avenger.models.interface';
+import { checkPrimitive } from './clone-object';
+import { YOUTUBE_URL_EMBED, YOUTUBE_URL_ID, YOUTUBE_URL_SHORT, YOUTUBE_URL_STANDARD } from './regex.utils';
+
+export function getRouteParamKey<T = any>(key: string, route: ActivatedRouteSnapshot, recursiveParent: boolean = false): T | null {
+  const value = route.params[key];
+  if (value) {
+    return value;
+  }
+
+  if (recursiveParent && route.parent) {
+    return getRouteParamKey(key, route.parent, recursiveParent);
+  } else {
+    return null;
+  }
+}
+
+export function capitalize(str: string) {
+  if (!str) {
+    return '';
+  } else if (str.length < 2) {
+    return str.toUpperCase();
+  }
+  const Str = str.toLowerCase();
+  const capitalized = Str.charAt(0).toUpperCase() + Str.slice(1);
+  return capitalized;
+}
+
+export const getUserFullName = (user: IUser) => {
+  if (user) {
+    const { firstname, middlename, lastname } = user;
+    const middle = middlename
+      ? ` ${middlename} `
+      : ` `;
+
+    const displayName = `${firstname}${middle}${lastname}`;
+    return displayName;
+  } else {
+    return '';
+  }
+};
+
+export const getNotificationActionMessage = (notification: INotification): string | null => {
+  return null;
+}
+
+export const getFullNotificationMessage = (notification: INotification): string | null => {
+  return null;
+}
+
+export const get_last = <T> (list: T[]): T|undefined => {
+  return list.length > 0 ? list[list.length - 1] : undefined;
+};
+
+
+/**
+ * Copy Object
+ * ---
+ *
+ * Deep copy object via recursion call.
+ * - for primitives, just return the given argument.
+ * - for Dates, call new Date instance with argument and return it
+ * - for arrays, create new array and push recursive call for each item
+ * - for object, create new object and set each key to recursive call
+ *
+ * @param {*} obj 
+ * @returns {object}
+ */
+export function clone<T>  (obj: any): T  {
+  const isPrimitive = checkPrimitive(obj);
+  if (isPrimitive) {
+    return obj;
+  }
+  if (obj.constructor === Date) {
+    const newDate = new Date(obj);
+    return newDate as unknown as T;
+  }
+
+  let copy: any;
+  if (obj.constructor === Array) {
+    copy = [];
+    for (const item of <Array<any>> obj) {
+      const copyItem = clone(item);
+      copy.push(copyItem);
+    }
+  } else if (obj.constructor === Object) {
+    copy = {};
+    const keys = Object.keys(obj);
+    for (const key of keys) {
+      const copyItem = clone(obj[key]);
+      copy[key] = copyItem;
+    }
+  } else if (obj.constructor === Map) {
+    copy = new Map();
+    (<Map<any, any>> obj).forEach((value, key) => {
+      const copyItem = clone(value);
+      copy.set(key, copyItem);
+    });
+  }
+
+  const typedCopy = copy as T;
+  return typedCopy;
+};
+
+export function get_user_records_endpoint(
+  user_id: number,
+  path: USER_RECORDS | string,
+  min_id?: number,
+  get_all: boolean = false,
+  is_public: boolean = true
+) {
+  const partial_prefix = is_public ? '/get-' : '/';
+  const endpoint = get_all
+    ? '/users/' + user_id + partial_prefix + path + '/all'
+    : min_id
+      ? '/users/' + user_id + partial_prefix + path + '/' + min_id
+      : '/users/' + user_id + partial_prefix + path;
+  return endpoint;
+}
+
+export function elementIsInViewPort(elm: HTMLElement, log: boolean = false) {
+  const bounding = elm.getBoundingClientRect();
+  let isVisible: boolean = false;
+
+  if (bounding.top >= 0 && bounding.left >= 0 && bounding.right <= window.innerWidth && bounding.bottom <= window.innerHeight) {
+    log && console.log('Element is in the viewport!', elm);
+    isVisible = true;
+  } else {
+    log && console.log('Element is NOT in the viewport!', elm);
+    isVisible = false;
+  }
+
+  return isVisible;
+}
+
+export function isYouTubeLink(value: string) {
+  const isStandard = YOUTUBE_URL_STANDARD.test(value);
+  const isEmbed = YOUTUBE_URL_EMBED.test(value);
+  const isShortLink = YOUTUBE_URL_SHORT.test(value);
+  const match = isStandard || isEmbed || isShortLink;
+  return match;
+};
+
+export function getYouTubeIdFromLink(str: string) {
+  const match = str.match(YOUTUBE_URL_ID);
+  const id = match && match[0].replace('v=', '').replace('\/', '');
+  return id;
+}

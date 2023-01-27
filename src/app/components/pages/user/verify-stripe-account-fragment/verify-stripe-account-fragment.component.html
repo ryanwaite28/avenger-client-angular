@@ -1,0 +1,12 @@
+<div class="card-box-1">
+  <div class="uk-card-body">
+    <div *ngIf="results">
+      <p class="text-lead mb-3">{{ results.message }}</p>
+
+      <div *ngIf="continue_onboarding">
+        <p class="mb-2">Finish onboarding your stripe account</p>
+        <a class="btn-primary-1" [href]="onboarding_url">Finish Onboarding</a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+<div *ngIf="!!you" id="feed-page-component" class="w-full md:w-[1200px] mx-auto px-8 py-4 flex flex-row gap-5">
+  <div class="side-nav w-1/5">
+    <div>
+      
+    </div>
+  </div>
+
+  <div class="feed-contents grow border-gray-300">
+    <div class="border-x border-t border-gray-300 p-3">
+      <span class="cursor-pointer link-text" (click)="go_back()">
+        <div class="flex flex-row items-center">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span class="mx-2"></span>
+          <span>Back</span>
+        </div>
+      </span>
+    </div>
+    <div class="">
+      <div>
+        <ng-container [ngSwitch]="!!notice">
+          <div *ngSwitchCase="true">
+            <div class="p-3 mb-5 border border-gray-300">
+              <app-notice
+                [notice]="notice"
+              ></app-notice>
+            </div>
+
+            <div class="border-b border-gray-300">
+              <p class="text-xl mb-3">Replies</p>
+              <div *ngFor="let notice_reply of notice.notice_replies let isFirst = first" [ngClass]="{ 'border-t': isFirst }" class="p-3 border-x border-gray-300">
+                <app-notice
+                  [notice]="notice_reply"
+                ></app-notice>
+              </div>
+            </div>
+          </div>
+
+          <div *ngSwitchCase="false">
+            <p>No Notice Found</p>
+          </div>
+        </ng-container>
+
+      </div>
+
+      <div #feedBottomElm></div>
+    </div>
+
+    <!-- <div *ngIf="loading && !end_reached" class="p-4 flex justify-center">
+      <app-spinner></app-spinner>
+    </div> -->
+  </div>
+
+  <div class="more-info hidden sm:block w-1/5">
+    <div>
+      
+    </div>
+  </div>
+</div>

@@ -108,7 +108,7 @@ export class UsersService {
       }),
       catchError((error: HttpErrorResponse) => {
         if (error.status !== HttpStatusCode.REQUEST_FAILED) {
-          this.sign_out();
+          // this.sign_out();
         }
         console.log(error);
         this.router.navigate(['/', 'signin']);
@@ -122,6 +122,10 @@ export class UsersService {
         });
       })
     );
+  }
+
+  get_users_by_query(query: string) {
+    return this.clientService.get<IUser[]>(`/users/query/${query}`);
   }
 
   use_jwt_from_url(jwt: string) {

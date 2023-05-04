@@ -1,3 +1,5 @@
+import { Validators } from "@angular/forms";
+
 export const genderOptions = [
   { label: 'Male', value: 1 },
   { label: 'Female', value: 2 },
@@ -15,3 +17,6 @@ export const COMMON_CURRENT_DATE = new Date();
 
 
 export const JWT_TOKEN_NAME: string = `rmw-avenger-jwt`;
+
+export const GENERIC_TEXT_FORM_LIMIT = 250;
+export const GENERIC_TEXT_VALIDATORS = [Validators.required, Validators.maxLength(GENERIC_TEXT_FORM_LIMIT)];

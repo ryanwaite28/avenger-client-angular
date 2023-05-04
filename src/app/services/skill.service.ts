@@ -26,7 +26,7 @@ export class SkillService {
 
 
   get_skill_by_query(query: string) {
-    return this.clientService.get<ISkill>(`/skills/query/${query}`);
+    return this.clientService.get<ISkill[]>(`/skills/query/${query}`);
   }
 
 

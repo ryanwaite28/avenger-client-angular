@@ -1,4 +1,4 @@
-<div *ngIf="!!you" id="feed-notices-page-component" class="w-full md:w-[1200px] mx-auto px-8 py-4 flex flex-row gap-5">
+<div *ngIf="!!you" id="feed-notices-page-component" class="w-full md:w-[1450px] mx-auto px-8 py-4 flex flex-row gap-5">
   
   <!-- Left -->
   <div class="side-nav w-1/5">
@@ -22,7 +22,10 @@
     </div>
 
     <div class="border-x border-gray-300">
-      <div *ngFor="let notice of notice_feed; let isFirst = first" [ngClass]="{ 'border-t': isFirst }" class="p-3 border-b border-gray-300">
+      <div
+        *ngFor="let notice of notice_feed; let isFirst = first"
+        [ngClass]="{ 'border-t': isFirst }"
+        class="p-3 border-b border-gray-300">
         <app-notice
           [notice]="notice"
           [show_parent_notice]="true"

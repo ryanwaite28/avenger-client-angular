@@ -37,6 +37,7 @@ export class NoticeFormComponent {
       resetForm: () => {
         this.noticeForm.setValue({ body: '' });
         this.noticeForm.markAsPristine();
+        this.noticeForm.markAsUntouched();
       }
     });
   }

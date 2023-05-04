@@ -1,0 +1,26 @@
+<div class="">
+  <div>
+    <ng-container [ngSwitch]="!!interview">
+      <div *ngSwitchCase="true">
+        <div class="border-b border-gray-300">
+          <p class="text-2xl mb-3 text-center">Comments</p>
+          <div *ngFor="let comment of interview.comments" class="p-3 border-x border-t border-gray-300">
+            <app-interview-comment
+              [comment]="comment"
+            ></app-interview-comment>
+          </div>
+        </div>
+      </div>
+
+      <div *ngSwitchCase="false">
+        <p>No Interview Found</p>
+      </div>
+
+      <div *ngIf="loading && !end_reached" class="p-4 flex justify-center">
+        <app-spinner></app-spinner>
+      </div>
+    </ng-container>
+  </div>
+
+  <div #feedBottomElm></div>
+</div>

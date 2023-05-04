@@ -1,9 +1,10 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -61,6 +62,17 @@ import { InterviewComponent } from './components/fragments/model/interview/inter
 import { BypassResourceUrlPipe } from './pipes/bypass-resource-url.pipe';
 import { InterviewCommentComponent } from './components/fragments/model/interview-comment/interview-comment.component';
 import { InterviewCommentReplyComponent } from './components/fragments/model/interview-comment-reply/interview-comment-reply.component';
+import { RatingFormComponent } from './components/fragments/forms/rating-form/rating-form.component';
+import { TooltipModule } from './modules/tooltip/tooltip.module';
+import { InterviewCommentsPageComponent } from './components/pages/interview-page/interview-comments-page/interview-comments-page.component';
+import { InterviewInterviewerRatingsPageComponent } from './components/pages/interview-page/interview-interviewer-ratings-page/interview-interviewer-ratings-page.component';
+import { InterviewIntervieweeRatingsPageComponent } from './components/pages/interview-page/interview-interviewee-ratings-page/interview-interviewee-ratings-page.component';
+import { SimilarInterviewResultsPageComponent } from './components/pages/interview-page/similar-interview-results-page/similar-interview-results-page.component';
+import { InterviewerRatingComponent } from './components/fragments/model/interviewer-rating/interviewer-rating.component';
+import { IntervieweeRatingComponent } from './components/fragments/model/interviewee-rating/interviewee-rating.component';
+import { RatingStarsComponent } from './components/fragments/rating-stars/rating-stars.component';
+import { CsrfInterceptor } from './interceptors/csrf.interceptor';
+import { UserFollowStatusComponent } from './components/fragments/user-follow-status/user-follow-status.component';
 
 @NgModule({
   declarations: [
@@ -121,6 +133,15 @@ import { InterviewCommentReplyComponent } from './components/fragments/model/int
     BypassResourceUrlPipe,
     InterviewCommentComponent,
     InterviewCommentReplyComponent,
+    RatingFormComponent,
+    InterviewCommentsPageComponent,
+    InterviewInterviewerRatingsPageComponent,
+    InterviewIntervieweeRatingsPageComponent,
+    SimilarInterviewResultsPageComponent,
+    InterviewerRatingComponent,
+    IntervieweeRatingComponent,
+    RatingStarsComponent,
+    UserFollowStatusComponent,
   ],
   imports: [
     BrowserModule,
@@ -130,9 +151,16 @@ import { InterviewCommentReplyComponent } from './components/fragments/model/int
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    TooltipModule,
+    NgSelectModule,
   ],
   providers: [
     APP_INIT_PROVIDER,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: CsrfInterceptor,
+      multi: true
+    },
 
     PayoutPipe,
     PhonePipe,

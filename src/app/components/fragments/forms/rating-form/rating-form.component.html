@@ -1,0 +1,41 @@
+<div>
+  <form #ratingFormElm class="block p-3" [formGroup]="ratingForm" (ngSubmit)="onSubmit(ratingFormElm)">
+    <div class="mb-7">
+      <span class="label-info text-sm text-gray-500 mb-2 block">
+        Rating
+      </span>
+      <select class="p-2 w-full border border-grayy-300" formControlName="rating" name="rating">
+        <option *ngFor="let rating of ratingOptions" [value]="rating">{{ rating }}</option>
+      </select>
+    </div>
+
+    <div class="mb-7">
+      <span class="label-info text-sm text-gray-500 mb-2 block">
+        Title ({{ ratingForm.value.title?.length }}/{{ TEXT_FORM_LIMIT }})
+      </span>
+      <input name="title" class="input-text-2 border" type="text" placeholder="Enter a title" formControlName="title" [ngClass]="{ 'border-red-500': ratingForm.controls['title'].touched && ratingForm.controls['title'].invalid }" />
+    </div>
+
+    <div class="mb-7">
+      <span class="label-info text-sm text-gray-500 mb-2 block">
+        Summary ({{ ratingForm.value.summary?.length }}/{{ TEXT_FORM_LIMIT }})
+      </span>
+      <textarea
+        name="summary"
+        class="input-text-2 border"
+        type="text"
+        placeholder="Enter rating summary"
+        formControlName="summary"
+        [ngClass]="{ 'border-red-500': ratingForm.controls['summary'].touched && ratingForm.controls['summary'].invalid }"
+      ></textarea>
+    </div>
+
+    <button
+      type="submit"
+      [ngClass]="{ 'btn-primary-1': ratingForm.valid && !loading, 'btn-disabled': ratingForm.invalid || loading }"
+      [disabled]="loading"
+    >
+      Submit
+    </button>
+  </form>
+</div>

@@ -604,7 +604,11 @@ export interface IInterview extends ICommonModel {
   video_key: string | null,
   
   owner?: IUser,
+  interviewer?: IUser,
   comments?: IInterviewComment[],
+  skills?: ISkill[],
+  interviewee_ratings?: IIntervieweeRating[],
+  interviewer_ratings?: IInterviewerRating[],
 }
 
 
@@ -633,6 +637,8 @@ export interface IInterviewerRating extends ICommonModel {
   summary: string,
   image_link: string,
   image_id: string,
+
+  writer?: IUser,
 }
 
 

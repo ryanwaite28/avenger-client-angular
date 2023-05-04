@@ -15,6 +15,9 @@ import { elementIsInViewPort } from 'src/app/_misc/chamber';
 
 enum ActionContext {
   COMMENT = 'COMMENT',
+  EDIT = 'EDIT',
+  INTERVIEWER_RATING = 'INTERVIEWER_RATING',
+  INTERVIEWEE_RATING = 'INTERVIEWEE_RATING',
 }
 
 @Component({
@@ -34,10 +37,12 @@ export class InterviewComponent implements OnInit, AfterViewInit, OnChanges, OnD
   stats?: IInterviewStats;
   isPageSeen: boolean = false; // if user as seen via scrolling
   
-  activity?: IInterviewUserAnalyticInfo;
+  activity?: IInterviewUserAnalyticInfo | any;
   socketEvents: string[] = [];
   ActionContext = ActionContext;
   current_action_context: ActionContext | null = null;
+  did_submit_interviewee_rating: boolean = false;
+  did_submit_interviewer_rating: boolean = false;
 
   get isOwner(): boolean {
     const match = (
@@ -47,6 +52,15 @@ export class InterviewComponent implements OnInit, AfterViewInit, OnChanges, OnD
     );
     return match;
   };
+
+  get interviewer_tooltip_text(): string {
+    const tooltip = `Interviewer Ratings - ${this.stats?.interviewer_rating.avg || 0}/5 out of ${this.stats?.interviewer_rating.count || 0} ratings`;
+    return tooltip;
+  }
+  get interviewee_tooltip_text(): string {
+    const tooltip = `Interviewer Ratings - ${this.stats?.interviewee_rating.avg || 0}/5 out of ${this.stats?.interviewee_rating.count || 0} ratings`;
+    return tooltip;
+  }
 
   constructor(
     private userStore: UserStoreService,
@@ -70,10 +84,18 @@ export class InterviewComponent implements OnInit, AfterViewInit, OnChanges, OnD
 
   ngOnInit() {
     this.reset();
+  }
 
-    this.modelClient.interview.get_latest_trending_skills_on_interviews().subscribe({
+  cgeck_user_given_ratings() {
+    this.modelClient.interview.check_interviewee_rating_by_writer_id_and_interview_id(this.interview.id, this.you!.id).subscribe({
       next: (response) => {
-        
+        this.did_submit_interviewee_rating = !!response.data;
+      }
+    });
+
+    this.modelClient.interview.check_interviewer_rating_by_writer_id_and_interview_id(this.interview.id, this.you!.id).subscribe({
+      next: (response) => {
+        this.did_submit_interviewer_rating = !!response.data;
       }
     });
   }
@@ -83,13 +105,19 @@ export class InterviewComponent implements OnInit, AfterViewInit, OnChanges, OnD
       return;
     }
 
-    this.socketEvents = Object.values(AVENGER_EVENT_TYPES)
-      .filter((event_name: string) => event_name.toLowerCase().includes('interview'))
-      .map((event_name: string) => `INTERVIEW:${this.interview.id}:${event_name}`)
-      .concat([`INTERVIEW:${this.interview.id}:${AVENGER_EVENT_TYPES.NEW_ANALYTIC}`]);
+    this.socketEvents = [
+      `INTERVIEW:${this.interview.id}:${AVENGER_EVENT_TYPES.NEW_REACTION}`,
+      `INTERVIEW:${this.interview.id}:${AVENGER_EVENT_TYPES.REACTION_RESCINDED}`,
+      `INTERVIEW:${this.interview.id}:${AVENGER_EVENT_TYPES.UPDATED}`,
+      `INTERVIEW:${this.interview.id}:${AVENGER_EVENT_TYPES.DELETED}`,
+      `INTERVIEW:${this.interview.id}:${AVENGER_EVENT_TYPES.NEW_ANALYTIC}`,
+      `INTERVIEW:${this.interview.id}:${AVENGER_EVENT_TYPES.NEW_COMMENT}`,
+      `INTERVIEW:${this.interview.id}:${AVENGER_EVENT_TYPES.INTERVIEWEE_RATING}`,
+      `INTERVIEW:${this.interview.id}:${AVENGER_EVENT_TYPES.INTERVIEWER_RATING}`,
+    ];
 
     this.start_events_listener();
-
+    this.cgeck_user_given_ratings();
     this.get_interview_stats();
     this.get_user_activity();
   }
@@ -165,31 +193,45 @@ export class InterviewComponent implements OnInit, AfterViewInit, OnChanges, OnD
   handle_socket_event(eventName: string, data: any) {
     console.log(data, { eventName });
     switch (eventName) {
-      case AVENGER_EVENT_TYPES.NEW_INTERVIEW_REACTION: {
+      case AVENGER_EVENT_TYPES.NEW_REACTION: {
         if (this.stats) {
           this.stats.reactions_count = this.stats.reactions_count + 1;
         }
         break;
       }
-      case AVENGER_EVENT_TYPES.INTERVIEW_REACTION_RESCINDED: {
+      case AVENGER_EVENT_TYPES.REACTION_RESCINDED: {
         if (this.stats) {
           this.stats.reactions_count = this.stats.reactions_count - 1;
         }
         break;
       }
-      case AVENGER_EVENT_TYPES.INTERVIEW_UPDATED: {
+      case AVENGER_EVENT_TYPES.UPDATED: {
         data.interview && Object.assign(this.interview, data.interview);
         break;
       }
-      case AVENGER_EVENT_TYPES.INTERVIEW_DELETED: {
+      case AVENGER_EVENT_TYPES.DELETED: {
         data.interview && Object.assign(this.interview, data.interview);
         this.interviewDeleted.emit();
         break;
       }
-      case AVENGER_EVENT_TYPES.NEW_INTERVIEW_COMMENT: {
+      case AVENGER_EVENT_TYPES.NEW_COMMENT: {
         data.comment && this.interview.comments?.unshift(data.comment);
         if (this.stats) {
           this.stats.comments_count = this.stats.comments_count + 1;
+        }
+        break;
+      }
+      case AVENGER_EVENT_TYPES.INTERVIEWEE_RATING: {
+        data.rating && this.interview.interviewee_ratings?.push(data.rating);
+        if (this.stats) {
+          this.stats.interviewee_rating = data.rating_stats;
+        }
+        break;
+      }
+      case AVENGER_EVENT_TYPES.INTERVIEWER_RATING: {
+        data.rating && this.interview.interviewer_ratings?.push(data.rating);
+        if (this.stats) {
+          this.stats.interviewer_rating = data.rating_stats;
         }
         break;
       }
@@ -270,6 +312,46 @@ export class InterviewComponent implements OnInit, AfterViewInit, OnChanges, OnD
       },
       error: (error: HttpErrorResponse) => {
         this.loading = false;
+        this.alertService.handleResponseErrorGeneric(error);
+      }
+    });
+  }
+
+  create_interviewer_rating(formEvent: IFormSubmitEvent) {
+    this.modelClient.interview.create_interviewer_rating({
+      interview_id: this.interview.id,
+      writer_id: this.you!.id,
+      rating: formEvent.payload['rating'],
+      title: formEvent.payload['title'],
+      summary: formEvent.payload['summary'],
+    }).subscribe({
+      next: (response) => {
+        console.log(response);
+        this.did_submit_interviewer_rating = true;
+        this.current_action_context = null;
+        formEvent.resetForm && formEvent.resetForm();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.alertService.handleResponseErrorGeneric(error);
+      }
+    });
+  }
+  
+  create_interviewee_rating(formEvent: IFormSubmitEvent) {
+    this.modelClient.interview.create_interviewee_rating({
+      interview_id: this.interview.id,
+      writer_id: this.you!.id,
+      rating: formEvent.payload['rating'],
+      title: formEvent.payload['title'],
+      summary: formEvent.payload['summary'],
+    }).subscribe({
+      next: (response) => {
+        console.log(response);
+        this.did_submit_interviewee_rating = true;
+        this.current_action_context = null;
+        formEvent.resetForm && formEvent.resetForm();
+      },
+      error: (error: HttpErrorResponse) => {
         this.alertService.handleResponseErrorGeneric(error);
       }
     });

@@ -178,7 +178,7 @@ export class UserSettingsFragmentComponent implements OnInit, AfterViewInit, OnD
         }
       });
 
-      this.createStripeCustomerCardElement();
+      // this.createStripeCustomerCardElement();
     }
   }
 

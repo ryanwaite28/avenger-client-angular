@@ -23,6 +23,64 @@
         </span>
         <textarea class="input-text-2 border" type="text" placeholder="Enter a description" formControlName="description" [ngClass]="{ 'border-red-500': interviewForm.controls.description.touched && interviewForm.controls.description.invalid }"></textarea>
       </div>
+
+      <div class="mb-7">
+        <span class="label-info text-sm text-gray-500 mb-2 block">
+          Skills being examined
+        </span>
+
+        <ng-select
+          #skillsSelect
+          [items]="skillsResults$ | async"
+          bindLabel="name"
+          [addTag]="false"
+          [multiple]="true"
+          [hideSelected]="true"
+          [trackByFn]="trackByFn"
+          [minTermLength]="1"
+          [loading]="skillsResultsLoading"
+          typeToSearchText="Please enter 1 or more characters"
+          [typeahead]="skillQueryInput$"
+          [(ngModel)]="selectedSkills"
+          [ngModelOptions]="{ standalone: true }"
+        ></ng-select>
+      </div>
+
+      <div class="mb-7">
+        <span class="label-info text-sm text-gray-500 mb-2 block">
+          Is the interviewer a user of this platform? If so, you can link them to this interview posting by selecting them. Search for them with the input below.
+        </span>
+
+        <ng-select
+          #interviewersSelect
+          [items]="interviewerResults$ | async"
+          bindLabel="displayname"
+          [addTag]="false"
+          [multiple]="false"
+          [hideSelected]="true"
+          [trackByFn]="trackByFn"
+          [minTermLength]="1"
+          [loading]="interviewerResultsLoading"
+          typeToSearchText="Please enter 1 or more characters"
+          [typeahead]="interviewerQueryInput$"
+          [(ngModel)]="selectedInterviewer"
+          [ngModelOptions]="{ standalone: true }"
+        >
+          <ng-template ng-label-tmp let-item="item">
+            <div class="flex flex-row gap-3 items-center">
+              <img class="rounded-full w-8 h-8" [src]="item.icon_link || './assets/img/anon.png'"/>
+              <b>{{ item.displayname }}</b>
+            </div>
+          </ng-template>
+
+          <ng-template ng-option-tmp let-item="item" let-index="index">
+            <div class="flex flex-row gap-3 items-center">
+              <img class="rounded-full w-8 h-8" [src]="item.icon_link || './assets/img/anon.png'"/>
+              <b>{{ item.displayname }}</b>
+            </div>
+          </ng-template>
+        </ng-select>
+      </div>
       
       <div *ngIf="!!youtubeEmbedControl.value" class="mb-3">
         <h1 class="mb-3">Preview</h1>
@@ -32,8 +90,12 @@
       <div class="mb-7 flex flex-row gap-3 items-center" *ngIf="!!youtubeEmbedControl.value">
         <input class="" type="checkbox" [(ngModel)]="hasPermissionToPost" [ngModelOptions]="{ standalone: true }" />
         <span class="label-info text-sm text-gray-500">
-          Do you have permission to post this video?
+          I certify that I have permission to post this interview video and that I am the one being interviewed.
         </span>
+      </div>
+
+      <div *ngIf="isShowingMoreInfo" class="border border-gray-300">
+        <p></p>
       </div>
 
       <button

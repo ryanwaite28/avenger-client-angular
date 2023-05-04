@@ -86,8 +86,8 @@ export class NoticeComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     }
 
     this.socketEvents = [
-      `NOTICE:${this.notice.id}:${AVENGER_EVENT_TYPES.NEW_NOTICE_REACTION}`,
-      `NOTICE:${this.notice.id}:${AVENGER_EVENT_TYPES.NOTICE_REACTION_RESCINDED}`,
+      `NOTICE:${this.notice.id}:${AVENGER_EVENT_TYPES.NEW_REACTION}`,
+      `NOTICE:${this.notice.id}:${AVENGER_EVENT_TYPES.REACTION_RESCINDED}`,
       `NOTICE:${this.notice.id}:${AVENGER_EVENT_TYPES.NOTICE_UPDATED}`,
       `NOTICE:${this.notice.id}:${AVENGER_EVENT_TYPES.NOTICE_DELETED}`,
       `NOTICE:${this.notice.id}:${AVENGER_EVENT_TYPES.NOTICE_SHARED}`,
@@ -174,11 +174,11 @@ export class NoticeComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   handle_socket_event(eventName: string, data: any) {
     console.log(data, { eventName });
     switch (eventName) {
-      case AVENGER_EVENT_TYPES.NEW_NOTICE_REACTION: {
+      case AVENGER_EVENT_TYPES.NEW_REACTION: {
         this.stats && this.stats.reactions_count++;
         break;
       }
-      case AVENGER_EVENT_TYPES.NOTICE_REACTION_RESCINDED: {
+      case AVENGER_EVENT_TYPES.REACTION_RESCINDED: {
         this.stats && this.stats.reactions_count--;
         break;
       }

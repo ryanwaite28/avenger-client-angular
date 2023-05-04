@@ -45,9 +45,10 @@ export class ClientService {
   }
 
   getXsrfToken() {
-    return this.sendRequest<any>(`/common/utils/get-xsrf-token-pair`, 'GET')
+    return this.sendRequest<any>(`/common/utils/get-csrf-token`, 'GET')
       .pipe(
         map((response: any) => {
+          console.log(`CSRF Token Set.`);
           return response;
         }),
         catchError((error: HttpErrorResponse) => {

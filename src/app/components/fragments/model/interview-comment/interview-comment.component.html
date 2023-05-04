@@ -32,10 +32,17 @@
       <div class="grow">
         <!-- controls -->
         <ng-container *ngIf="stats">
-          <div class="flex flex-row justify-between mt-7">
-            <div class="flex flex-row gap-9">
-              <span class="cursor-pointer" [ngClass]="{ 'text-blue-300': !!activity && !!activity.commented }" (click)="set_action_context(ActionContext.REPLY)">
-                <i class="fa-solid fa-comments"></i> {{ stats.comments_count | number }}
+          <div class="flex flex-row justify-between">
+            <div class="flex flex-row gap-9 items-center">
+              <span class="cursor-pointer" [ngClass]="{ 'text-blue-300': !!activity && !!activity.replied }" (click)="set_action_context(ActionContext.REPLY)">
+                <i class="fa-solid fa-comments"></i> {{ stats.replies_count | number }}
+              </span>
+
+              <span
+                (click)="toggleShowReplies()"
+                class="cursor-pointer border border-white hover:border-gray-200 text-blue-500 hover:bg-gray-200 text-center block border py-2 px-4 rounded transition text-sm"
+              >
+                Replies <i class="ml-3 fa-solid" [ngClass]="isRepliesShown ? 'fa-caret-up' : 'fa-caret-down'"></i>
               </span>
     
               <span class="cursor-pointer" [ngClass]="{ 'text-red-500': !!activity && !!activity.reacted }" (click)="toggle_like()">
@@ -56,9 +63,25 @@
           
           <ng-container [ngSwitch]="current_action_context">
             <div class="p-3" *ngSwitchCase="ActionContext.REPLY">
-              <p>Reply</p>
+              <app-textarea-form
+                [placeholder]="'Enter a reply'"
+                (formSubmit)="create_interview_comment_reply($event)"
+              ></app-textarea-form>
             </div>
           </ng-container>
+
+          <div *ngIf="isRepliesShown" class="mt-3">
+            <div *ngFor="let reply of comment.replies; let isLast = last" class="p-3 border-x border-t border-gray-300" [ngClass]="{ 'border-b': isLast }">
+              <app-interview-comment-reply
+                [reply]="reply"
+                [interview_id]="comment.interview_id"
+              ></app-interview-comment-reply>
+            </div>
+            <div *ngIf="loading && !end_reached" class="p-4 flex justify-center">
+              <app-spinner></app-spinner>
+            </div>
+            <div #repliesBottomElm></div>
+          </div>
         </ng-container>
       </div>
     </div>

@@ -95,6 +95,11 @@ export class FeedInterviewsPageComponent {
   }
 
   create_interview(formEvent: IFormSubmitEvent) {
+    const ask = window.confirm(`Once created, it cannot be edited. Are all fields correct?`);
+    if (!ask) {
+      return;
+    }
+
     const tags: string[] = formEvent.payload['description']?.match(/#[a-zA-Z0-9]+/gi)?.map((str: string) => str.slice(1)) || [];
     const mentions: string[] = formEvent.payload['description']?.match(/@[a-zA-Z0-9\-\_\.]{2,50}/gi)?.map((str: string) => str.slice(1)) || [];
     
@@ -103,9 +108,12 @@ export class FeedInterviewsPageComponent {
 
     this.modelClient.interview.create_interview({
       owner_id: this.you!.id,
+      interviewee_id: this.you!.id,
       title: formEvent.payload['title'],
       description: formEvent.payload['description'],
       video_link: formEvent.payload['video_link'],
+      skill_ids: formEvent.payload['skill_ids'],
+      interviewer_id: formEvent.payload['interviewer_id'],
       tags: tags.join(','),
     }).subscribe({
       next: (response) => {

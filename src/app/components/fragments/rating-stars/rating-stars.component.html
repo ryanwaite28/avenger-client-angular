@@ -1,0 +1,27 @@
+<div class="" [attr.data-rating]="rating">
+  <i
+    data-star-number="1"
+    class="text-yellow-500"
+    [ngClass]="rating >= 1 ? 'fa-solid fa-star' : rating < 1 && rating > 0 ? 'fa-solid fa-star-half-stroke' : 'fa-regular fa-star'"
+  ></i>
+  <i
+    data-star-number="2"
+    class="text-yellow-500"
+    [ngClass]="rating >= 2 ? 'fa-solid fa-star' : rating < 2 && rating > 1 ? 'fa-solid fa-star-half-stroke' : 'fa-regular fa-star'"
+  ></i>
+  <i
+    data-star-number="3"
+    class="text-yellow-500"
+    [ngClass]="rating >= 3 ? 'fa-solid fa-star' : rating < 3 && rating > 2 ? 'fa-solid fa-star-half-stroke' : 'fa-regular fa-star'"
+  ></i>
+  <i
+    data-star-number="4"
+    class="text-yellow-500"
+    [ngClass]="rating >= 4 ? 'fa-solid fa-star' : rating < 4 && rating > 3 ? 'fa-solid fa-star-half-stroke' : 'fa-regular fa-star'"
+  ></i>
+  <i
+    data-star-number="5"
+    class="text-yellow-500"
+    [ngClass]="rating === 5 ? 'fa-solid fa-star' : rating < 5 && rating > 4 ? 'fa-solid fa-star-half-stroke' : 'fa-regular fa-star'"
+  ></i>
+</div>

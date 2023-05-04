@@ -6,7 +6,11 @@ import { ContactComponent } from './components/pages/contact/contact.component';
 import { FeedInterviewsPageComponent } from './components/pages/feed-interviews-page/feed-interviews-page.component';
 import { FeedNoticessPageComponent } from './components/pages/feed-noticess-page/feed-noticess-page.component';
 import { FeedQuestionsPageComponent } from './components/pages/feed-questions-page/feed-questions-page.component';
+import { InterviewCommentsPageComponent } from './components/pages/interview-page/interview-comments-page/interview-comments-page.component';
+import { InterviewIntervieweeRatingsPageComponent } from './components/pages/interview-page/interview-interviewee-ratings-page/interview-interviewee-ratings-page.component';
+import { InterviewInterviewerRatingsPageComponent } from './components/pages/interview-page/interview-interviewer-ratings-page/interview-interviewer-ratings-page.component';
 import { InterviewPageComponent } from './components/pages/interview-page/interview-page.component';
+import { SimilarInterviewResultsPageComponent } from './components/pages/interview-page/similar-interview-results-page/similar-interview-results-page.component';
 import { NoticePageComponent } from './components/pages/notice-page/notice-page.component';
 import { PrivacyPolicyComponent } from './components/pages/privacy-policy/privacy-policy.component';
 import { QuestionPageComponent } from './components/pages/question-page/question-page.component';
@@ -50,7 +54,18 @@ const routes: Routes = [
   // { path: 'feed/questions', pathMatch: 'full', component: FeedQuestionsPageComponent, canActivate: [SignedInGuard] },
   
   { path: 'notices/:notice_id', pathMatch: 'full',  component: NoticePageComponent, resolve: { notice: NoticeResolver }, data: { page: ROUTE_PAGES.NOTICE_PAGE } },
-  { path: 'interviews/:interview_id', pathMatch: 'full',  component: InterviewPageComponent, resolve: { interview: InterviewResolver }, data: { page: ROUTE_PAGES.INTERVIEW_PAGE } },
+  {
+    path: 'interviews/:interview_id',
+    component: InterviewPageComponent,
+    resolve: { interview: InterviewResolver },
+    data: { page: ROUTE_PAGES.INTERVIEW_PAGE },
+    children: [
+      { path: 'comments', component: InterviewCommentsPageComponent, data: { page: ROUTE_PAGES.INTERVIEW_COMMENTS_PAGE }, },
+      { path: 'interviewer-ratings', component: InterviewInterviewerRatingsPageComponent, data: { page: ROUTE_PAGES.INTERVIEW_INTERVIEWER_RATINGS_PAGE }, },
+      { path: 'interviewee-ratings', component: InterviewIntervieweeRatingsPageComponent, data: { page: ROUTE_PAGES.INTERVIEW_INTERVIEWEE_RATINGS_PAGE }, },
+      { path: 'similar-results', component: SimilarInterviewResultsPageComponent, data: { page: ROUTE_PAGES.SIMILAR_INTERVIEW_RESULTS_PAGE }, },
+    ]
+  },
   { path: 'questions/:question_id', pathMatch: 'full',  component: QuestionPageComponent, resolve: { question: QuestionResolver }, data: { page: ROUTE_PAGES.QUESTION_PAGE } },
   { path: 'answers/:answer_id', pathMatch: 'full',  component: AnswerPageComponent, resolve: { answer: AnswerResolver }, data: { page: ROUTE_PAGES.ANSWER_PAGE } },
 

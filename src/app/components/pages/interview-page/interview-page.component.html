@@ -1,9 +1,5 @@
-<div *ngIf="!!you" id="feed-page-component" class="w-full md:w-[1200px] mx-auto px-8 py-4 flex flex-row gap-5">
-  <div class="side-nav w-1/5">
-    <div>
-      
-    </div>
-  </div>
+<div *ngIf="!!you" id="feed-page-component" class="w-full md:w-[1450px] mx-auto px-8 py-4 flex flex-row gap-5">
+  <div class="hidden sm:block w-1/5"></div>
 
   <div class="feed-contents grow border-gray-300">
     <div class="border-x border-t border-gray-300 p-3">
@@ -15,44 +11,94 @@
         </div>
       </span>
     </div>
-    <div class="">
-      <div>
-        <ng-container [ngSwitch]="!!interview">
-          <div *ngSwitchCase="true">
-            <div class="p-3 mb-5 border border-gray-300">
-              <app-interview
-                [interview]="interview"
-              ></app-interview>
-            </div>
 
-            <div class="border-b border-gray-300">
-              <p class="text-xl mb-3">Comments</p>
-              <div *ngFor="let comment of interview.comments" class="p-3 border-x border-t border-gray-300">
-                <app-interview-comment
-                  [comment]="comment"
-                ></app-interview-comment>
-              </div>
-            </div>
-          </div>
-
-          <div *ngSwitchCase="false">
-            <p>No Interview Found</p>
-          </div>
-        </ng-container>
-
-      </div>
-
-      <div #feedBottomElm></div>
-    </div>
-
-    <div *ngIf="loading && !end_reached" class="p-4 flex justify-center">
-      <app-spinner></app-spinner>
-    </div>
-  </div>
-
-  <div class="more-info hidden sm:block w-1/5">
     <div>
-      
+      <ng-container [ngSwitch]="!!interview">
+        <div *ngSwitchCase="false">
+          <p>No Interview Found</p>
+        </div>
+
+        <div *ngSwitchCase="true">
+          <div class="p-3 border border-gray-300">
+            <app-interview
+              [interview]="interview"
+            ></app-interview>
+          </div>
+
+          <div class="border-x border-b border-gray-300 p-3 mb-7">
+            <ul class="flex">
+              <li class="flex-1 mr-2">
+                <a
+                  [routerLink]="['/', 'interviews', interview.id, 'comments']"
+                  routerLinkActive
+                  [routerLinkActiveOptions]="{exact: true}"
+                  #commentsLink="routerLinkActive"
+                  class="text-center block border py-2 px-4 rounded transition text-sm"
+                  [ngClass]="{
+                    'border-blue-500 bg-blue-500 hover:bg-blue-700 text-white': commentsLink.isActive,
+                    'border border-white hover:border-gray-200 text-blue-500 hover:bg-gray-200': !commentsLink.isActive
+                  }"
+                >
+                  Comments
+                </a>
+              </li>
+              <li class="flex-1 mr-2">
+                <a
+                  [routerLink]="['/', 'interviews', interview.id, 'interviewee-ratings']"
+                  routerLinkActive
+                  [routerLinkActiveOptions]="{exact: true}"
+                  #intervieweeRatings="routerLinkActive"
+                  class="text-center block border py-2 px-4 rounded transition text-sm"
+                  [ngClass]="{
+                    'border-blue-500 bg-blue-500 hover:bg-blue-700 text-white': intervieweeRatings.isActive,
+                    'border border-white hover:border-gray-200 text-blue-500 hover:bg-gray-200': !intervieweeRatings.isActive
+                  }"
+                >
+                  Interviewee Ratings
+                </a>
+              </li>
+              <li class="flex-1 mr-2">
+                <a
+                  [routerLink]="['/', 'interviews', interview.id, 'interviewer-ratings']"
+                  routerLinkActive
+                  [routerLinkActiveOptions]="{exact: true}"
+                  #interviewerRatings="routerLinkActive"
+                  class="text-center block border py-2 px-4 rounded transition text-sm"
+                  [ngClass]="{
+                    'border-blue-500 bg-blue-500 hover:bg-blue-700 text-white': interviewerRatings.isActive,
+                    'border border-white hover:border-gray-200 text-blue-500 hover:bg-gray-200': !interviewerRatings.isActive
+                  }"
+                >
+                  Interviewer Ratings
+                </a>
+              </li>
+          
+              <!-- <li class="flex-1 mr-2">
+                <a
+                  [routerLink]="['/', 'interviews', interview.id, 'similar-results']"
+                  routerLinkActive
+                  [routerLinkActiveOptions]="{exact: true}"
+                  #similarResults="routerLinkActive"
+                  class="text-center block border py-2 px-4 rounded transition text-sm"
+                  [ngClass]="{
+                    'border-blue-500 bg-blue-500 hover:bg-blue-700 text-white': similarResults.isActive,
+                    'border border-white hover:border-gray-200 text-blue-500 hover:bg-gray-200': !similarResults.isActive
+                  }"
+                >
+                  Similar Interviews
+                </a>
+              </li> -->
+            </ul>
+          </div>
+
+          <!-- Child Routes -->
+          <div class="more-info">
+            <router-outlet></router-outlet>
+          </div>
+        </div>
+      </ng-container>
     </div>
   </div>
+
+  <div class="hidden sm:block w-1/5"></div>
 </div>

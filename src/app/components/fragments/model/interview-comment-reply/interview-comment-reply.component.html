@@ -1,1 +1,57 @@
-<p>interview-comment-reply works!</p>
+<div #rootComponentElm>
+
+  <div *ngIf="!!reply.deleted_at" class="p-3 border border-gray-300">
+    <p>
+      <span>
+        This reply has been deleted.
+      </span>
+    </p>
+    
+  </div>
+
+  <div *ngIf="!reply.deleted_at">
+    <!-- if is normal reply -->
+    <div class="flex flex-row gap-3">
+      <div class="w-16">
+        <img class="rounded-xl w-full" [src]="reply.owner?.icon_link || './assets/img/anon.png'" alt="">
+      </div>
+
+      <div class="grow">
+        <p class="mb-3">
+          <span><a class="link-text" [routerLink]="['/', 'users', reply.owner?.id, 'home']">{{ reply.owner?.displayname }}</a></span>
+          <span class="mx-2 inline-block">&middot;</span> 
+          <span class="text-sm text-gray-500">{{ reply.created_at | date : 'MMM d, y - h:mm a' }} ({{ reply.created_at | timeAgo }})</span>
+        </p>
+        <p class="mb-3 text-lg">{{ reply.body }}</p>
+      </div>
+    </div>
+
+    <div class="flex flex-row gap-3">
+      <div class="w-16"></div>
+
+      <div class="grow">
+        <!-- controls -->
+        <ng-container *ngIf="stats">
+          <div class="flex flex-row justify-between">
+            <div class="flex flex-row gap-9 items-center">
+              <span class="cursor-pointer" [ngClass]="{ 'text-red-500': !!activity && !!activity.reacted }" (click)="toggle_like()">
+                <i class="fa-solid fa-heart"></i> {{ stats.reactions_count | number }}
+              </span>
+            </div>
+      
+            <div class="relative">
+              <span title="Menu"><i class="fa-solid fa-ellipsis cursor-pointer" (click)="isMenuShown = !isMenuShown"></i></span>
+              <ul [ngClass]="{
+                'ghost': !isMenuShown,
+                'absolute border border-gray-300 z-10 bg-white w-36': isMenuShown
+              }">
+                <li *ngIf="isOwner" (click)="delete_comment_reply()" class="p-1 flex items-center cursor-pointer hover:bg-gray-200">Delete</li>
+              </ul>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+</div>

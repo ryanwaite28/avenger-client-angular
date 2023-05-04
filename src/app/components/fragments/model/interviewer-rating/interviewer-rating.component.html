@@ -1,0 +1,34 @@
+<div #rootComponentElm>
+
+  <div *ngIf="!!rating.deleted_at" class="p-3 border border-gray-300">
+    <p>
+      <span>
+        This rating has been deleted.
+      </span>
+    </p>
+    
+  </div>
+
+  <div *ngIf="!rating.deleted_at">
+    <!-- if is normal rating -->
+    <div class="flex flex-row gap-3">
+      <div class="w-16">
+        <img class="rounded-xl w-full" [src]="rating.writer?.icon_link || './assets/img/anon.png'" alt="">
+      </div>
+
+      <div class="grow">
+        <p class="mb-3">
+          <span><a class="link-text" [routerLink]="['/', 'users', rating.writer?.id, 'home']">{{ rating.writer?.displayname }}</a></span>
+          <span class="mx-2 inline-block">&middot;</span> 
+          <span class="text-sm text-gray-500">{{ rating.created_at | date : 'MMM d, y - h:mm a' }} ({{ rating.created_at | timeAgo }})</span>
+        </p>
+
+        <app-rating-stars [rating]="rating.rating"></app-rating-stars>
+
+        <p class="mb-2 text-lg">{{ rating.title }}</p>
+        <p class="mb-2 text-md">{{ rating.summary }}</p>
+      </div>
+    </div>
+  </div>
+
+</div>

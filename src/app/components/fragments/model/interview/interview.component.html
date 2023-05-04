@@ -6,74 +6,159 @@
         This interview has been deleted.
       </a>
     </p>
-    
   </div>
 
-  <div *ngIf="!interview.deleted_at">
-    <!-- if is normal interview -->
-    <div class="flex flex-row gap-3">
+  <section *ngIf="!interview.deleted_at">
+    <div class="flex flex-row gap-3 mb-5">
       <div class="w-16">
         <img class="rounded-xl w-full" [src]="interview.owner?.icon_link || './assets/img/anon.png'" alt="">
       </div>
-
       <div class="grow">
-        <p class="mb-3">
-          <span><a class="link-text" [routerLink]="['/', 'users', interview.owner?.id, 'home']">{{ interview.owner?.displayname }}</a></span>
-          <span class="mx-2 inline-block">&middot;</span> 
-          <a class="link-text" [routerLink]="['/', 'interviews', interview.id]"><span class="text-sm">{{ interview.created_at | date : 'MMM d, y - h:mm a' }} ({{ interview.created_at | timeAgo }})</span></a>
+        <p class="">
+          <span>{{ interview.owner?.displayname }}</span>
         </p>
-        <p class="mb-3 text-lg">{{ interview.title }}</p>
-        <p class="mb-3">{{ interview.description }}</p>
+        <p>
+          <span><a class="link-text" [routerLink]="['/', 'users', interview.owner?.id, 'home']">@{{ interview.owner?.username }}</a></span>
+        </p>
+      </div>
+    </div>
 
-        <div *ngIf="!!interview.video_link" class="mb-3">
-          <iframe [src]="interview.video_link | bypassResourceUrl" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen frameborder="0" class="h-64 w-full"></iframe>
+    <div class="">
+      <p class="mb-3 text-lg">
+        <span>{{ interview.title }}</span>
+        <span class="mx-2 inline-block">&middot;</span> 
+        <span><a class="link-text" [routerLink]="['/', 'interviews', interview.id]"><span class="text-sm">{{ interview.created_at | date : 'MMM d, y - h:mm a' }} ({{ interview.created_at | timeAgo }})</span></a></span>
+      </p>
+      <p class="mb-3">{{ interview.description }}</p>
+      <div *ngIf="interview.skills?.length" class="my-5">
+        <p class="mb-3">Skills Examined</p>
+        <ul class="flex flex-row flex-wrap gap-3">
+          <li *ngFor="let skill of interview.skills" class="bg-black text-white text-sm p-2 rounded-full"><span>{{ skill.name }}</span></li>
+        </ul>
+      </div>
+      <!-- interviewer -->
+      <div *ngIf="interview.interviewer" class="p-3 border border-gray-300 mb-5">
+        <p class="text-lg mb-3">Interviewer</p>
+        <div class="flex flex-row gap-3">
+          <div class="w-12">
+            <img class="rounded-xl w-full" [src]="interview.interviewer?.icon_link || './assets/img/anon.png'" alt="">
+          </div>
+          <div class="grow">
+            <p class="">
+              <span>{{ interview.interviewer?.displayname }}</span>
+            </p>
+            <p>
+              <span><a class="link-text" [routerLink]="['/', 'users', interview.interviewer?.id, 'home']">@{{ interview.interviewer?.username }}</a></span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!!interview.video_link" class="mb-3">
+        <iframe
+          [src]="interview.video_link | bypassResourceUrl"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          frameborder="0"
+          class="h-96 w-full border bg-gray-300"
+        ></iframe>
+      </div>
+
+      <div class="flex flex-row gap-3">  
+        <div class="grow">
+          <!-- controls -->
+          <ng-container *ngIf="stats">
+            <div class="flex flex-row justify-between my-3">
+              <div class="flex flex-row gap-9">
+                <span class="cursor-pointer" [tooltip]="'Analytics'">
+                  <i class="fa-solid fa-square-poll-vertical"></i> {{ stats.analytics_count | number }}
+                </span>
+          
+                <span
+                  [tooltip]="'Comments'"
+                  class="cursor-pointer"
+                  [ngClass]="{ 'text-blue-300': !!activity && !!activity.commented }"
+                  (click)="set_action_context(ActionContext.COMMENT)"
+                >
+                  <i class="fa-solid fa-comments"></i> {{ stats.comments_count | number }}
+                </span>
+      
+                <span
+                  [tooltip]="'Likes'"
+                  class="cursor-pointer"
+                  [ngClass]="{ 'text-red-500': !!activity && !!activity.reacted }"
+                  (click)="toggle_like()"
+                >
+                  <i class="fa-solid fa-heart"></i> {{ stats.reactions_count | number }}
+                </span>
+  
+                <span
+                  [tooltip]="interviewee_tooltip_text"
+                  class="cursor-pointer"
+                  [ngClass]="{ 'text-green-500': did_submit_interviewee_rating }"
+                  (click)="!did_submit_interviewee_rating && set_action_context(ActionContext.INTERVIEWEE_RATING)"
+                >
+                  <i class="fa-solid fa-user"></i> {{ stats.interviewee_rating.avg  || 0 }}
+                </span>
+  
+                <span
+                  [tooltip]="interviewer_tooltip_text"
+                  class="cursor-pointer"
+                  [ngClass]="{ 'text-violet-500': did_submit_interviewer_rating }"
+                  (click)="!did_submit_interviewer_rating && set_action_context(ActionContext.INTERVIEWER_RATING)"
+                >
+                  <i class="fa-solid fa-chalkboard-user"></i> {{ stats.interviewer_rating.avg || 0 }}
+                </span>
+              </div>
+        
+              <div class="relative">
+                <span title="Menu"><i class="fa-solid fa-ellipsis cursor-pointer" (click)="isMenuShown = !isMenuShown"></i></span>
+                <ul [ngClass]="{
+                  'ghost': !isMenuShown,
+                  'absolute border border-gray-300 z-10 bg-white w-36': isMenuShown
+                }">
+                  <!-- <li *ngIf="isOwner" (click)="set_action_context(ActionContext.EDIT); isMenuShown = false;" class="p-1 flex items-center cursor-pointer hover:bg-gray-200">
+                    Edit
+                  </li> -->
+                  <li *ngIf="isOwner" (click)="delete_interview(); isMenuShown = false;" class="p-1 flex items-center cursor-pointer hover:bg-gray-200">
+                    Delete
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            <ng-container [ngSwitch]="current_action_context">
+              <div class="p-3" *ngSwitchCase="ActionContext.COMMENT">
+                <app-textarea-form
+                  [placeholder]="'Enter a comment'"
+                  (formSubmit)="create_interview_comment($event)"
+                ></app-textarea-form>
+              </div>
+  
+              <div class="p-3" *ngSwitchCase="ActionContext.INTERVIEWER_RATING">
+                <p>Give Interviewer Rating</p>
+                <app-rating-form
+                  (formSubmit)="create_interviewer_rating($event)"
+                ></app-rating-form>
+              </div>
+              
+              <div class="p-3" *ngSwitchCase="ActionContext.INTERVIEWEE_RATING">
+                <p>Give Interviewee Rating</p>
+                <app-rating-form
+                  (formSubmit)="create_interviewee_rating($event)"
+                ></app-rating-form>
+              </div>
+
+              <!-- <div class="p-3" *ngSwitchCase="ActionContext.EDIT">
+                <app-interview-form
+                  (formSubmit)="update_interview($event)"
+                ></app-interview-form>
+              </div> -->
+            </ng-container>
+          </ng-container>
         </div>
       </div>
     </div>
-
-    <div class="flex flex-row gap-3">
-      <div class="w-16"></div>
-
-      <div class="grow">
-        <!-- controls -->
-        <ng-container *ngIf="stats">
-          <div class="flex flex-row justify-between mt-7">
-            <div class="flex flex-row gap-9">
-              <span class="cursor-pointer">
-                <i class="fa-solid fa-square-poll-vertical"></i> {{ stats.analytics_count | number }}
-              </span>
-        
-              <span class="cursor-pointer" [ngClass]="{ 'text-blue-300': !!activity && !!activity.commented }" (click)="set_action_context(ActionContext.COMMENT)">
-                <i class="fa-solid fa-comments"></i> {{ stats.comments_count | number }}
-              </span>
-    
-              <span class="cursor-pointer" [ngClass]="{ 'text-red-500': !!activity && !!activity.reacted }" (click)="toggle_like()">
-                <i class="fa-solid fa-heart"></i> {{ stats.reactions_count | number }}
-              </span>
-            </div>
-      
-            <div class="relative">
-              <span title="Menu"><i class="fa-solid fa-ellipsis cursor-pointer" (click)="isMenuShown = !isMenuShown"></i></span>
-              <ul [ngClass]="{
-                'ghost': !isMenuShown,
-                'absolute border border-gray-300 z-10 bg-white w-36': isMenuShown
-              }">
-                <li *ngIf="isOwner" (click)="delete_interview()" class="p-1 flex items-center cursor-pointer hover:bg-gray-200">Delete</li>
-              </ul>
-            </div>
-          </div>
-          
-          <ng-container [ngSwitch]="current_action_context">
-            <div class="p-3" *ngSwitchCase="ActionContext.COMMENT">
-              <app-textarea-form
-                [placeholder]="'Enter a comment'"
-                (formSubmit)="create_interview_comment($event)"
-              ></app-textarea-form>
-            </div>
-          </ng-container>
-        </ng-container>
-      </div>
-    </div>
-  </div>
+  </section>
 
 </div>
